@@ -1,0 +1,23 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">12dp</dimen>
+
+    <dimen name="activity_main_bottom_bar_height">60dp</dimen>
+
+    <dimen name="default_icon_width">30dp</dimen>
+    <dimen name="default_icon_width_half">20dp</dimen>
+    <dimen name="main_tab_record_icon_width">60dp</dimen>
+    <dimen name="main_tab_record_icon_layout_width">72dp</dimen>
+    <dimen name="main_tab_record_icon_width_half">35dp</dimen>
+
+    <dimen name="vod_record_red_btn_width">54dp</dimen>
+
+    <dimen name="default_padding">20dp</dimen>
+    <dimen name="default_padding_double">40dp</dimen>
+    <dimen name="default_padding_half">10dp</dimen>
+    <dimen name="default_padding_quarter">5dp</dimen>
+    <dimen name="default_text_size">14sp</dimen>
+    <dimen name="main_title_text_size">18sp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+</resources>

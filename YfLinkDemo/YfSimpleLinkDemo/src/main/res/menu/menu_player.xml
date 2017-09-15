@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".menu_app">
+    <item
+        android:id="@+id/action_ask_for_link"
+        android:title="请求连麦"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_exit_link"
+        android:title="退出连麦"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_link_debug"
+        android:title="连麦该主播(debug)"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_open_link_debug"
+        android:title="打开连麦流(debug)"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/switch_camera"
+        android:title="切换摄像头"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_open_another_stream"
+        android:title="打开其他主播流"
+        app:showAsAction="ifRoom" />
+</menu>

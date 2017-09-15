@@ -1,0 +1,136 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.demo.yflinkdemo.fragment.FirstMenuFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text="主播与观众连麦："
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:gravity="center"
+                android:text="主播的推流流名："
+                android:textColor="@color/blue"
+                android:textSize="14sp"/>
+
+            <EditText
+                android:id="@+id/stream_url_0"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="观众的推流流名："
+                android:textColor="@color/blue"
+                android:textSize="14sp"/>
+
+            <EditText
+                android:id="@+id/link_url_0"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="连麦Buffer："
+                android:textColor="@color/blue"
+                android:textSize="14sp"/>
+
+            <EditText
+                android:id="@+id/link_buffer"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="200"
+                android:inputType="number"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/push0"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_weight="0.6"
+                android:gravity="center"
+                android:text="主播"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/pull0"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="连麦观众"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/audience0"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="普通观众"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"/>
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text=" - 两个地址在主播和观众端中必须保持一致\n\n - 连麦流程：\n   主播发起直播-观众观看直播-主播开启连麦功能-观众请求连麦-主播接受连麦\n\n - 连麦两端需戴耳机通话"/>
+
+
+    </LinearLayout>
+
+</FrameLayout>

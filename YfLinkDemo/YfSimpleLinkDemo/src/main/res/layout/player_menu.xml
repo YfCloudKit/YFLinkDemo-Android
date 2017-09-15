@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@color/transBlack"
+              android:gravity="center_vertical"
+              android:orientation="vertical">
+
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@color/transBlack"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:paddingBottom="@dimen/default_padding_half"-->
+        <!--android:paddingLeft="@dimen/default_padding"-->
+        <!--android:paddingRight="@dimen/default_padding"-->
+        <!--android:paddingTop="@dimen/default_padding_half">-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/info_title"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Infos"-->
+            <!--android:textColor="@android:color/white"-->
+            <!--android:textSize="@dimen/default_text_size"/>-->
+
+        <!--<ImageView-->
+            <!--android:id="@+id/info_img"-->
+            <!--android:layout_width="30dp"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:src="@mipmap/icon_info"-->
+
+            <!--/>-->
+    <!--</RelativeLayout>-->
+
+    <!--<ImageView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="2dp"-->
+        <!--android:background="#808e8e8e"/>-->
+
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@color/transBlack"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:paddingBottom="@dimen/default_padding_half"-->
+        <!--android:paddingLeft="@dimen/default_padding"-->
+        <!--android:paddingRight="@dimen/default_padding"-->
+        <!--android:paddingTop="@dimen/default_padding_half">-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/log_title"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Logs"-->
+            <!--android:textColor="@android:color/white"-->
+            <!--android:textSize="@dimen/default_text_size"/>-->
+
+        <!--<ImageView-->
+            <!--android:id="@+id/log_img"-->
+            <!--android:layout_width="30dp"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:src="@mipmap/icon_logs"-->
+
+            <!--/>-->
+    <!--</RelativeLayout>-->
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#808e8e8e"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#808e8e8e"/>
+    <RelativeLayout
+        android:id="@+id/query_link_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/transBlack"
+        android:gravity="center_vertical"
+        android:paddingBottom="@dimen/default_padding_half"
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
+        android:paddingTop="@dimen/default_padding_half">
+
+        <TextView
+            android:id="@+id/query_link_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="切换摄像头"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/default_text_size"/>
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/link_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/transBlack"
+        android:gravity="center_vertical"
+        android:paddingBottom="@dimen/default_padding_half"
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
+        android:paddingTop="@dimen/default_padding_half">
+
+        <TextView
+            android:id="@+id/link_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="连麦该主播(debug)"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/default_text_size"/>
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/open_link_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/transBlack"
+        android:gravity="center_vertical"
+        android:paddingBottom="@dimen/default_padding_half"
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
+        android:paddingTop="@dimen/default_padding_half">
+
+        <TextView
+            android:id="@+id/open_link_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="打开连麦流(debug)"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/default_text_size"/>
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/request_link_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/transBlack"
+        android:gravity="center_vertical"
+        android:paddingBottom="@dimen/default_padding_half"
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
+        android:paddingTop="@dimen/default_padding_half">
+
+        <TextView
+            android:id="@+id/request_link_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="请求连麦"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/default_text_size"/>
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/exit_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/transBlack"
+        android:gravity="center_vertical"
+        android:paddingBottom="@dimen/default_padding_half"
+        android:paddingLeft="@dimen/default_padding"
+        android:paddingRight="@dimen/default_padding"
+        android:paddingTop="@dimen/default_padding_half">
+
+        <TextView
+            android:id="@+id/exit_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="退出连麦"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/default_text_size"/>
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>

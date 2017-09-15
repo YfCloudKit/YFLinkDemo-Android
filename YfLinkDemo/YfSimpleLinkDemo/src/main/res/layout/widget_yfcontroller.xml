@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/header"
+            android:layout_width="@dimen/default_icon_width"
+            android:layout_height="@dimen/default_icon_width"
+            android:layout_centerVertical="true"
+            android:background="@mipmap/play_enable" />
+
+        <TextView
+            android:id="@+id/publisher_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/default_padding_half"
+            android:layout_toRightOf="@id/header"
+            android:text="Jacky.chen"
+            android:textColor="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="@dimen/default_icon_width_half"
+            android:layout_height="@dimen/default_icon_width_half"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/icon_close" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <ImageView
+            android:id="@+id/play_pause"
+            android:layout_width="@dimen/default_icon_width"
+            android:layout_height="@dimen/default_icon_width"
+            android:src="@drawable/playwindow_btn_play_seletor" />
+
+        <ImageView
+            android:id="@+id/more_info"
+            android:layout_width="@dimen/default_icon_width"
+            android:layout_height="@dimen/default_icon_width"
+            android:layout_alignParentRight="true"
+            android:src="@mipmap/icon_more_info" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/button_layout"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="@dimen/default_padding_half">
+
+        <TextView
+            android:id="@+id/timestamp_past"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="02:00"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/timestamp_duaration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:text="04:00"
+            android:textColor="@android:color/white" />
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/timestamp_duaration"
+            android:layout_toRightOf="@id/timestamp_past"
+            android:max="1000"
+            android:maxHeight="4dp"
+            android:minHeight="4dp"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp"
+            android:progressDrawable="@drawable/po_seekbar"
+            android:indeterminate="false" />
+    </RelativeLayout>
+
+
+</RelativeLayout>
