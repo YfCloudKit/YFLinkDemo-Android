@@ -43,8 +43,8 @@ import com.demo.yflinkdemo.widget.DeviceUtil;
 import com.demo.yflinkdemo.widget.Log;
 import com.demo.yflinkdemo.widget.LogRecorder;
 import com.demo.yflinkdemo.widget.ScaleGLSurfaceView;
-import com.yunfan.encoder.filter.AlphaBlendFilter;
-import com.yunfan.encoder.filter.BeautyFilter;
+import com.yunfan.encoder.effect.filter.AlphaBlendFilter;
+import com.yunfan.encoder.filter.YfBlurBeautyFilter;
 import com.yunfan.encoder.widget.RecordMonitor;
 import com.yunfan.encoder.widget.YfEncoderKit;
 import com.yunfan.net.K2Pagent;
@@ -116,7 +116,7 @@ public class PushStreamActivity extends AppCompatActivity implements RecordMonit
     private boolean ENABLE_PLAYER_UDP, ENABLE_STREAMER_UDP;
     private final int BEAUTY_INDEX = 1, LOGO_INDEX = 2;
     private int mLinkBufferMs;
-    private BeautyFilter mBeautyFilter;
+    private YfBlurBeautyFilter mBeautyFilter;
     private AlphaBlendFilter mLogoFilter;
     private boolean mEnableAudioPlay;
     /**
@@ -220,7 +220,7 @@ public class PushStreamActivity extends AppCompatActivity implements RecordMonit
             case R.id.action_set_beauty:
                 if (!setBeauty) {
                     if (mBeautyFilter == null) {
-                        mBeautyFilter = new BeautyFilter();
+                        mBeautyFilter = new YfBlurBeautyFilter(this);
                         mBeautyFilter.setIndex(BEAUTY_INDEX);
                     }
                     yfEncoderKit.addFilter(mBeautyFilter);
@@ -440,7 +440,7 @@ public class PushStreamActivity extends AppCompatActivity implements RecordMonit
                 .setRecordMonitor(this)//设置回调
                 .setDefaultCamera(false)//设置默认打开后置摄像头---不设置也默认打开后置摄像头
                 .openCamera(s);//设置预览窗口
-        mBeautyFilter = new BeautyFilter();
+        mBeautyFilter = new YfBlurBeautyFilter(this);
         mBeautyFilter.setIndex(BEAUTY_INDEX);
         yfEncoderKit.addFilter(mBeautyFilter);//默认打开滤镜
         setBeauty = true;
@@ -598,10 +598,10 @@ public class PushStreamActivity extends AppCompatActivity implements RecordMonit
     }
 
     @Override
-    public void onInfo(int what, int arg1, int arg2, Object obj) {
+    public void onInfo(int what, double arg1, double arg2, Object obj) {
         if (what == YfEncoderKit.INFO_IP) {
-            Log.d(TAG, "实际推流的IP地址:" + intToIp(arg1));
-            logRecoder.writeLog("IP:" + intToIp(arg1));
+            Log.d(TAG, "实际推流的IP地址:" + intToIp((int) arg1));
+            logRecoder.writeLog("IP:" + intToIp((int) arg1));
         }
     }
 
@@ -894,21 +894,7 @@ public class PushStreamActivity extends AppCompatActivity implements RecordMonit
                 mYfPlayerKit.setVolume(0, 0);
             }
         });
-        if (ENABLE_PLAYER_UDP && mK2Pagent == null) {
-            mK2Pagent = new K2Pagent(K2Pagent.USER_MODE_PUSH, K2Pagent.NET_MODE_UDP, path, 5000,
-                    new byte[]{12}, new K2Pagent.K2PagentCallback() {
-                @Override
-                public void onPostSpeed(double send, double recv) {
-                    Log.d(TAG, "onPostSpeed: " + send + " ---"+recv);
-                }
-
-                @Override
-                public void onPostInfo(String info) {
-                    Log.d(TAG, "onPostInfo: " + info);
-                }
-            });
-            path = mK2Pagent.getUrl();
-        }
+        mYfPlayerKit.enableUDP(ENABLE_PLAYER_UDP);
         mYfPlayerKit.setOnInfoListener(new YfCloudPlayer.OnInfoListener() {
             @Override
             public boolean onInfo(YfCloudPlayer mp, int what, int extra) {

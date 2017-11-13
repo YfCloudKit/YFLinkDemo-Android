@@ -33,10 +33,10 @@ public class MainActivity extends AppCompatActivity {
 //    public static String LINKER_PULL_HOST = "http://183.129.179.53/yfflv.yflive.net/live/";
 
 
-    public static String PUSH_HOST = "rtmp://183.134.68.69/push-zk.yftest.yflive.net/live/";
-    public static String PULL_HOST = "rtmp://183.134.68.69/rtmp-zk.yftest.yflive.net/live/";
-    public static String LINKER_PUSH_HOST = "rtmp://183.134.68.69/push-zk.yftest.yflive.net/live/";
-    public static String LINKER_PULL_HOST = "rtmp://183.134.68.69/rtmp-zk.yftest.yflive.net/live/";
+    public static String PUSH_HOST = "rtmp://push-zk.yftest.yflive.net/live/";
+    public static String PULL_HOST = "rtmp://rtmp-zk.yftest.yflive.net/live/";
+    public static String LINKER_PUSH_HOST = "rtmp://push-zk.yftest.yflive.net/live/";
+    public static String LINKER_PULL_HOST = "rtmp://rtmp-zk.yftest.yflive.net/live/";
     public static String LINKER_PULL_HOST_HTTP = "http://flv-zk.yftest.yflive.net/live/";
 
     public static int OUT_WIDTH = 144;

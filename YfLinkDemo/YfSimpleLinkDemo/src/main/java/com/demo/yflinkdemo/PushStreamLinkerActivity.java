@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,8 +44,8 @@ import com.demo.yflinkdemo.widget.DeviceUtil;
 import com.demo.yflinkdemo.widget.Log;
 import com.demo.yflinkdemo.widget.LogRecorder;
 import com.demo.yflinkdemo.widget.ScaleGLSurfaceView;
-import com.yunfan.encoder.filter.AlphaBlendFilter;
-import com.yunfan.encoder.filter.BeautyFilter;
+import com.yunfan.encoder.effect.filter.AlphaBlendFilter;
+import com.yunfan.encoder.filter.YfBlurBeautyFilter;
 import com.yunfan.encoder.widget.RecordMonitor;
 import com.yunfan.encoder.widget.YfEncoderKit;
 import com.yunfan.net.K2Pagent;
@@ -67,8 +68,9 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
     private boolean startRecoderAuto = true;
     private ScaleGLSurfaceView mGLSurfaceView;
     private LinearLayout actionbarLayout, infoLayout;
-    private TextView textBitrate, textBuffer;
+    private TextView textBitrate, textBuffer,textDelay;
     private ActionBar actionBar;
+    private SeekBar audioDelaySeekBar;
     private int surfaceWidth, surfaceHeight;
     private boolean mLandscape = false;
     private boolean mEnableFilter = true;
@@ -106,14 +108,13 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
     private boolean ENABLE_PLAYER_UDP, ENABLE_STREAMER_UDP;
     private final int BEAUTY_INDEX = 1, LOGO_INDEX = 2;
     private int mLinkBufferMs;
-    private BeautyFilter mBeautyFilter;
+    private YfBlurBeautyFilter mBeautyFilter;
     private AlphaBlendFilter mLogoFilter;
     private boolean mEnableAudioPlay;
     /**
      * 主播的播放地址，根据该地址创建连麦房间
      */
     private String mHostPlayUrl;
-    private K2Pagent mK2Pagent;
 
     public static void startActivity(Context context, String pushUrl, String secondUrl, boolean playerUDP, boolean streamerUDP, boolean hardEncoder, int bufferMs) {
         Intent i = new Intent(context, PushStreamLinkerActivity.class);
@@ -210,7 +211,7 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
             case R.id.action_set_beauty:
                 if (!setBeauty) {
                     if (mBeautyFilter == null) {
-                        mBeautyFilter = new BeautyFilter();
+                        mBeautyFilter = new YfBlurBeautyFilter(this);
                         mBeautyFilter.setIndex(BEAUTY_INDEX);
                     }
                     yfEncoderKit.addFilter(mBeautyFilter);
@@ -360,6 +361,25 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
                 return yfEncoderKit.manualZoom(zoom);
             }
         });
+        textDelay= (TextView) findViewById(R.id.seekProgress);
+        audioDelaySeekBar = (SeekBar) findViewById(R.id.seekBar0);
+        audioDelaySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                textDelay.setText(progress+"");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                yfEncoderKit.setInputAudioDelay(seekBar.getProgress());
+
+            }
+        });
         mGLSurfaceView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -427,9 +447,10 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
                 .setLandscape(mLandscape)//设置是否横屏模式（默认竖屏）
                 .enableFlipFrontCamera(false)//设置前置摄像头是否镜像处理，默认为true
                 .setRecordMonitor(this)//设置回调
+                .setDropVideoFrameOnly(true)
                 .setDefaultCamera(false)//设置默认打开后置摄像头---不设置也默认打开后置摄像头
                 .openCamera(s);//设置预览窗口
-        mBeautyFilter = new BeautyFilter();
+        mBeautyFilter = new YfBlurBeautyFilter(this);
         mBeautyFilter.setIndex(BEAUTY_INDEX);
         yfEncoderKit.addFilter(mBeautyFilter);//默认打开滤镜
         setBeauty = true;
@@ -460,7 +481,6 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
         Log.d(TAG, "开始录制");
         //设置编码参数：直播/录制、是否硬编、码率、宽、高
         yfEncoderKit.changeMode(YfEncoderKit.MODE_LIVE, VIDEO_BITRATE);
-//        yfEncoderKit.setMaxReconnectCount(5);//自动重连次数，0代表不自动重连
 //        yfEncoderKit.setAdjustQualityAuto(true, 300);//打开码率自适应，最低码率300k
         yfEncoderKit.setBufferSizeBySec(1);//最多缓存1秒的数据，超过1秒则丢帧
         mUDPUrl = mAudienceUrl;
@@ -583,10 +603,10 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
     }
 
     @Override
-    public void onInfo(int what, int arg1, int arg2, Object obj) {
+    public void onInfo(int what, double arg1, double arg2, Object obj) {
         if (what == YfEncoderKit.INFO_IP) {
-            Log.d(TAG, "实际推流的IP地址:" + intToIp(arg1));
-            logRecoder.writeLog("IP:" + intToIp(arg1));
+            Log.d(TAG, "实际推流的IP地址:" + intToIp((int) arg1));
+            logRecoder.writeLog("IP:" + intToIp((int) arg1));
         }
     }
 
@@ -776,21 +796,7 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
                 mYfPlayerKit.setVolume(0, 0);
             }
         });
-        if (ENABLE_PLAYER_UDP && mK2Pagent == null) {
-            mK2Pagent = new K2Pagent(K2Pagent.USER_MODE_PUSH, K2Pagent.NET_MODE_UDP, path, 5000,
-                    new byte[]{12}, new K2Pagent.K2PagentCallback() {
-                @Override
-                public void onPostSpeed(double send, double recv) {
-                    Log.d(TAG, "onPostSpeed: " + send + " ---"+recv);
-                }
-
-                @Override
-                public void onPostInfo(String info) {
-                    Log.d(TAG, "onPostInfo: " + info);
-                }
-            });
-            path = mK2Pagent.getUrl();
-        }
+        mYfPlayerKit.enableUDP(ENABLE_PLAYER_UDP);
         mYfPlayerKit.setOnInfoListener(new YfCloudPlayer.OnInfoListener() {
             @Override
             public boolean onInfo(YfCloudPlayer mp, int what, int extra) {

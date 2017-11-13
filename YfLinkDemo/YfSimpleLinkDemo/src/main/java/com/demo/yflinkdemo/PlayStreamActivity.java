@@ -31,7 +31,7 @@ import android.widget.Toast;
 import com.demo.yflinkdemo.extra.Utils;
 import com.demo.yflinkdemo.widget.DeviceUtil;
 import com.demo.yflinkdemo.widget.YfController;
-import com.yunfan.encoder.filter.BeautyFilter;
+import com.yunfan.encoder.filter.YfBlurBeautyFilter;
 import com.yunfan.encoder.widget.RecordMonitor;
 import com.yunfan.encoder.widget.YfEncoderKit;
 import com.yunfan.net.K2Pagent;
@@ -151,6 +151,7 @@ public class PlayStreamActivity extends BasePlayerDemo implements YfCloudPlayer.
         mVideoView.selectAudio(1);
         mVideoView.setHardwareDecoder(false);
         mVideoView.setBufferSizeByMs(6000);
+
 //        mVideoView.setDelayTimeMs(mLinkBufferMs, mLinkBufferMs);
 //        mVideoView.enableBufferState(false);
 //        mVideoView.setBufferSize(15 * 1024 * 1024);
@@ -328,7 +329,7 @@ public class PlayStreamActivity extends BasePlayerDemo implements YfCloudPlayer.
     int OUTPUT_WIDTH = 240, OUTPUT_HEIGHT = 144;
 
     private YfLinkerKit mYfLinkerKit;
-    private BeautyFilter mBeautyFilter;
+    private YfBlurBeautyFilter mBeautyFilter;
 
     @Override
     public void linkToStreamer() {
@@ -355,7 +356,7 @@ public class PlayStreamActivity extends BasePlayerDemo implements YfCloudPlayer.
                 .setRecordMonitor(this)//设置回调
                 .setDefaultCamera(true)//设置默认打开后置摄像头---不设置也默认打开后置摄像头
                 .openCamera(mSecondSurface);//设置预览窗口
-        mBeautyFilter = new BeautyFilter();
+        mBeautyFilter = new YfBlurBeautyFilter(this);
         yfEncoderKit.addFilter(mBeautyFilter);//默认打开滤镜
         if (setupSurface) {
             startRecorder();
@@ -392,22 +393,7 @@ public class PlayStreamActivity extends BasePlayerDemo implements YfCloudPlayer.
         mSecondPlayer.getSurfaceView().getHolder().setFormat(PixelFormat.TRANSPARENT);
         mSecondPlayer.getSurfaceView().setZOrderOnTop(true);
         mVideoViewLayout.addView(mSecondPlayer);
-
-        if (mEnablePlayerUdp && mK2Pagent == null) {
-            mK2Pagent = new K2Pagent(K2Pagent.USER_MODE_PUSH, K2Pagent.NET_MODE_UDP, mAnotherStreamPath, 5000,
-                    new byte[]{12}, new K2Pagent.K2PagentCallback() {
-                @Override
-                public void onPostSpeed(double send, double recv) {
-                    Log.d(TAG, "onPostSpeed: " + send + " ---"+recv);
-                }
-
-                @Override
-                public void onPostInfo(String info) {
-                    Log.d(TAG, "onPostInfo: " + info);
-                }
-            });
-            mAnotherStreamPath = mK2Pagent.getUrl();
-        }
+        mSecondPlayer.enableUDP(mEnablePlayerUdp);
         mSecondPlayer.selectAudio(1);
         mSecondPlayer.setHardwareDecoder(false);
         mSecondPlayer.setBufferSizeByMs(6000);
@@ -569,22 +555,7 @@ public class PlayStreamActivity extends BasePlayerDemo implements YfCloudPlayer.
 
     private void startPlayBack(String path) {
         mStartPlayTime = SystemClock.elapsedRealtime();
-        String tempPath = path;
-        if (mEnablePlayerUdp && mK2Pagent == null) {
-            mK2Pagent = new K2Pagent(K2Pagent.USER_MODE_PUSH, K2Pagent.NET_MODE_UDP, tempPath, 5000,
-                    new byte[]{12}, new K2Pagent.K2PagentCallback() {
-                @Override
-                public void onPostSpeed(double send, double recv) {
-                    Log.d(TAG, "onPostSpeed: " + send + " ---"+recv);
-                }
-
-                @Override
-                public void onPostInfo(String info) {
-                    Log.d(TAG, "onPostInfo: " + info);
-                }
-            });
-            tempPath = mK2Pagent.getUrl();
-        }
+        mVideoView.enableUDP(mEnablePlayerUdp);
         mVideoView.setOnNativeAudioDecodedListener(new YfCloudPlayer.OnNativeAudioDataDecoded() {
             @Override
             public void onAudioDataDecoded(YfCloudPlayer mp, byte[] data, int length, long pts) {
@@ -593,7 +564,7 @@ public class PlayStreamActivity extends BasePlayerDemo implements YfCloudPlayer.
                 }
             }
         });
-        mVideoView.setVideoPath(tempPath);
+        mVideoView.setVideoPath(path);
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         Log.d(TAG, "!audioManager.isWiredHeadsetOn()" + !audioManager.isWiredHeadsetOn());
         audioManager.setSpeakerphoneOn(!audioManager.isWiredHeadsetOn());
@@ -809,9 +780,9 @@ public class PlayStreamActivity extends BasePlayerDemo implements YfCloudPlayer.
 
 
     @Override
-    public void onInfo(int what, int arg1, int arg2, Object obj) {
+    public void onInfo(int what, double arg1, double arg2, Object obj) {
         if (what == YfEncoderKit.INFO_IP) {
-            Log.d(TAG, "实际推流的IP地址:" + intToIp(arg1));
+            Log.d(TAG, "实际推流的IP地址:" + intToIp((int) arg1));
         }
     }
 
