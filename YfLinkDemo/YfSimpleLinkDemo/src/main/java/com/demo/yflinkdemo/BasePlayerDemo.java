@@ -46,6 +46,7 @@ public abstract class BasePlayerDemo extends AppCompatActivity {
     protected static final String PLAYER_UDP = "PLAYER_UDP";
     protected static final String STREAMER_UDP = "STREAMER_UDP";
     protected static final String HARD_ENCODER = "HARD_ENCODER";
+    protected static final String HARD_AEC = "HARD_AEC";
     protected static final String LINK_BUFFER = "LINK_BUFFER";
     protected boolean mIsFullScreen;
     protected boolean mInitEnd = false;

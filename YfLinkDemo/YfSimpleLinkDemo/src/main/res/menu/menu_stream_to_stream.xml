@@ -22,6 +22,7 @@
     <item
         android:id="@+id/action_manual_focus"
         android:title="手动/自动对焦"
+        android:visible="false"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_close_capture"
@@ -34,14 +35,17 @@
     <item
         android:id="@+id/action_set_logo"
         android:title="LOGO"
+        android:visible="false"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_enable_audio"
         android:title="暂停/恢复音频推流"
+        android:visible="false"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_flip_camera"
         android:title="前置镜像"
+        android:visible="false"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_show_data"
@@ -59,6 +63,7 @@
     <item
         android:id="@+id/action_open_zhubo_link"
         android:title="打开/关闭主播连麦流"
+        android:orderInCategory="0"
         app:showAsAction="ifRoom" />
 
 

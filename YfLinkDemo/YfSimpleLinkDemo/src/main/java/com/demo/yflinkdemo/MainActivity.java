@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 //    public static String LINKER_PULL_HOST = "http://video.langlive.com/live/";
 
     private TextView mTextViewPush1, mTextViewPush0;
-    private Switch enablePlayerUdp, enableStreamerUdp, enableHardEncoder;
+    private Switch enablePlayerUdp, enableStreamerUdp, enableHardEncoder,enableHWAEC;
     private TextView mTextViewPush2;
     private TextView mTextViewPull0;
     private TextView mTextViewAudience0;
@@ -67,10 +67,12 @@ public class MainActivity extends AppCompatActivity {
         enablePlayerUdp = (Switch) findViewById(R.id.enablePlayerUdp);
         enableStreamerUdp = (Switch) findViewById(R.id.enableStreamerUdp);
         enableHardEncoder = (Switch) findViewById(R.id.hardEncoder);
+        enableHWAEC = (Switch) findViewById(R.id.hardAEC);
         YfAuthentication.getInstance().authenticate(AccessKey,Token, null);//鉴权
         enablePlayerUdp.setOnCheckedChangeListener(mOnCheckedChangeListener);
         enableStreamerUdp.setOnCheckedChangeListener(mOnCheckedChangeListener);
         enableHardEncoder.setOnCheckedChangeListener(mOnCheckedChangeListener);
+        enableHWAEC.setOnCheckedChangeListener(mOnCheckedChangeListener);
 
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
@@ -92,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean mEnableHardEncoder;
     private boolean mEnableStreamUdp;
     private boolean mEnablePlayerUdp;
+    private boolean mEnableHWAEC;
     CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -105,9 +108,12 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.hardEncoder:
                     mEnableHardEncoder = isChecked;
                     break;
+                case R.id.hardAEC:
+                    mEnableHWAEC = isChecked;
+                    break;
             }
-            mFirstMenuFragment.setPrams(mEnablePlayerUdp, mEnableStreamUdp, mEnableHardEncoder);
-            mSecondMenuFragment.setPrams(mEnablePlayerUdp, mEnableStreamUdp, mEnableHardEncoder);
+            mFirstMenuFragment.setPrams(mEnablePlayerUdp, mEnableStreamUdp, mEnableHardEncoder,mEnableHWAEC);
+            mSecondMenuFragment.setPrams(mEnablePlayerUdp, mEnableStreamUdp, mEnableHardEncoder,mEnableHWAEC);
         }
     };
 

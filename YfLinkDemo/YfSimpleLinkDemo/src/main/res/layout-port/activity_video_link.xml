@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg_1"
+    tools:context="com.demo.yflinkdemo.VideoLinkActivity">
+
+    <ViewStub
+        android:id="@+id/stub_host"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inflatedId="@+id/layout_host"
+        android:layout="@layout/layout_host"/>
+
+    <ViewStub
+        android:id="@+id/stub_vice_host"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inflatedId="@+id/layout_vice_host"
+        android:layout="@layout/layout_vice_host"/>
+
+    <ViewStub
+        android:id="@+id/stub_audience"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inflatedId="@+id/layout_audience"
+        android:layout="@layout/layout_audience"/>
+
+
+    <TextView
+        android:id="@+id/audio_link_hint"
+        android:layout_width="96dp"
+        android:layout_height="160dp"
+        android:text="语音连麦中.."
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:gravity="bottom"
+        android:visibility="gone"
+        android:background="@mipmap/audiolinker"
+        android:layout_gravity="right|bottom"/>
+    <include layout="@layout/layout_other"/>
+</FrameLayout>

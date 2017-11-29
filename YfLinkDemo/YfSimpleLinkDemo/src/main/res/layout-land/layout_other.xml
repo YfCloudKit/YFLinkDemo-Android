@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:orientation="vertical"
+    tools:showIn="@layout/activity_video_link">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical">
+
+        <Button
+            android:id="@+id/btn_switch"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/select_bg_switch_button"
+            android:visibility="invisible"/>
+
+        <Button
+            android:id="@+id/btn_exit"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/select_bg_exit_button"/>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/main_title_text_size"/>
+
+    <TextView
+        android:id="@+id/tv_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/main_title_text_size"/>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"/>
+
+    <!--<Button-->
+        <!--android:id="@+id/btn_start_push"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginLeft="@dimen/activity_horizontal_margin"-->
+        <!--android:layout_marginTop="16dp"-->
+        <!--android:background="@drawable/bg_little_round_corner_black_half_transparent"-->
+        <!--android:text="开始推流"-->
+        <!--android:textColor="@color/white"-->
+        <!--android:textSize="@dimen/main_title_text_size"/>-->
+
+    <!--<Button-->
+        <!--android:id="@+id/btn_start_play"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="40dp"-->
+        <!--android:background="@drawable/bg_little_round_corner_black_half_transparent"-->
+        <!--android:layout_marginLeft="@dimen/activity_horizontal_margin"-->
+        <!--android:layout_marginTop="16dp"-->
+        <!--android:text="开始连麦"-->
+        <!--android:textColor="@color/white"-->
+        <!--android:textSize="@dimen/main_title_text_size"/>-->
+
+
+</LinearLayout>
+
+

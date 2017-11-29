@@ -98,6 +98,7 @@ public class PushStreamActivity extends AppCompatActivity implements RecordMonit
     private static final String PLAYER_UDP = "PLAYER_UDP";
     private static final String STREAMER_UDP = "STREAMER_UDP";
     private static final String HARD_ENCODER = "HARD_ENCODER";
+    private static final String HARD_AEC = "HARD_AEC";
     private static final String LINK_BUFFER = "LINK_BUFFER";
     /**
      * 观众流推流地址
@@ -111,9 +112,8 @@ public class PushStreamActivity extends AppCompatActivity implements RecordMonit
 
     private boolean mEnableLink = false;
     private boolean mEnableHWEncoder = true;
-
     private String mDebugUrl;
-    private boolean ENABLE_PLAYER_UDP, ENABLE_STREAMER_UDP;
+    private boolean ENABLE_PLAYER_UDP, ENABLE_STREAMER_UDP,ENABLE_HARDWARE_AEC;
     private final int BEAUTY_INDEX = 1, LOGO_INDEX = 2;
     private int mLinkBufferMs;
     private YfBlurBeautyFilter mBeautyFilter;
@@ -125,13 +125,14 @@ public class PushStreamActivity extends AppCompatActivity implements RecordMonit
     private String mHostPlayUrl;
     private K2Pagent mK2Pagent;
 
-    public static void startActivity(Context context, String pushUrl, String secondUrl, boolean playerUDP, boolean streamerUDP, boolean hardEncoder, int bufferMs) {
+    public static void startActivity(Context context, String pushUrl, String secondUrl, boolean playerUDP, boolean streamerUDP, boolean hardEncoder,boolean hardwareAEC, int bufferMs) {
         Intent i = new Intent(context, PushStreamActivity.class);
         i.putExtra(URL_LIVE, pushUrl);
         i.putExtra(SECOND_URL_LIVE, secondUrl);
         i.putExtra(PLAYER_UDP, playerUDP);
         i.putExtra(STREAMER_UDP, streamerUDP);
         i.putExtra(HARD_ENCODER, hardEncoder);
+        i.putExtra(HARD_AEC, hardwareAEC);
         i.putExtra(LINK_BUFFER, bufferMs);
         context.startActivity(i);
     }
@@ -144,6 +145,7 @@ public class PushStreamActivity extends AppCompatActivity implements RecordMonit
         mEnableFilter = mEnableFilter && YfEncoderKit.canUsingFilter();
         ENABLE_PLAYER_UDP = getIntent().getBooleanExtra(PLAYER_UDP, false);
         ENABLE_STREAMER_UDP = getIntent().getBooleanExtra(STREAMER_UDP, false);
+        ENABLE_HARDWARE_AEC = getIntent().getBooleanExtra(HARD_AEC, false);
         mLinkBufferMs = getIntent().getIntExtra(LINK_BUFFER, 400);
         YfPlayerKit.enableRotation(true);//主播端使用textureview播放视频，可以简单解决surfaceview被glsurfaceview覆盖的问题
         mAudienceUrl = MainActivity.PUSH_HOST + getDefaultUrl();//第一条流推流地址
@@ -479,7 +481,7 @@ public class PushStreamActivity extends AppCompatActivity implements RecordMonit
         yfEncoderKit.setLiveUrl(mUDPUrl);
         int x = VIDEO_HEIGHT - MainActivity.OUT_WIDTH;
         int y = VIDEO_WIDTH - MainActivity.OUT_HEIGHT;
-        yfEncoderKit.setSecondFramePosition(x - MainActivity.DELTA_X, y - MainActivity.DELTA_Y);
+        yfEncoderKit.setRemoteFramePosition(x - MainActivity.DELTA_X, y - MainActivity.DELTA_Y);
         yfEncoderKit.startRecord();
         if (dataShowing) {
             infoShower.removeCallbacks(updateDisplay);
@@ -838,7 +840,7 @@ public class PushStreamActivity extends AppCompatActivity implements RecordMonit
             @Override
             public void onAudioDataDecoded(YfCloudPlayer mp, byte[] data, int length, long pts) {
                 if ((mEnableLink ) && yfEncoderKit != null)
-                    yfEncoderKit.onSecondAudioDecoded(data, length);//将音频数据传入编码器
+                    yfEncoderKit.onRemoteAudioAvailable(data, length);//将音频数据传入编码器
 
             }
         });
@@ -847,7 +849,7 @@ public class PushStreamActivity extends AppCompatActivity implements RecordMonit
             @Override
             public void onVideoDataDecoded(YfCloudPlayer mp, byte[] data, int width, int height, long pts) {
                 if (mEnableLink && yfEncoderKit != null)
-                    yfEncoderKit.onSecondFrameDecoded(data, width, height);//将视频数据传入编码器
+                    yfEncoderKit.onRemoteFrameAvailable(data, width, height);//将视频数据传入编码器
             }
         });
         mYfPlayerKit.setOnPreparedListener(new YfCloudPlayer.OnPreparedListener() {
@@ -855,6 +857,7 @@ public class PushStreamActivity extends AppCompatActivity implements RecordMonit
             public void onPrepared(YfCloudPlayer mp) {
                 if (mEnableLink && yfEncoderKit != null) {
                     Log.d(TAG, "size:" + mp.getVideoWidth() + "," + mp.getVideoHeight());
+                    yfEncoderKit.setAECMode(ENABLE_HARDWARE_AEC);
                     yfEncoderKit.prepareForLink();
                     if (mYfStreamerKit != null)
                         mYfStreamerKit.notifyLinkSuccessfully();//通知连麦用户切换音频

@@ -38,7 +38,10 @@ import com.yunfan.net.K2Pagent;
 import com.yunfan.player.widget.YfCloudPlayer;
 import com.yunfan.player.widget.YfPlayerKit;
 import com.yunfan.yflinkkit.YfLinkerKit;
+import com.yunfan.yflinkkit.bean.LinkerMember;
 import com.yunfan.yflinkkit.callback.QueryLinkCallback;
+
+import java.util.List;
 
 import static com.demo.yflinkdemo.PushStreamActivity.CACHE_DIRS;
 import static com.demo.yflinkdemo.PushStreamActivity.intToIp;
@@ -83,20 +86,21 @@ public class PlayStreamActivity extends BasePlayerDemo implements YfCloudPlayer.
     private long mStartPlayTime;
     private ImageView mLoadingView;
     private Animation mAnim;
-    private boolean mEnablePlayerUdp, mEnableStreamerUdp, mEnableHWEncoder;
+    private boolean mEnablePlayerUdp, mEnableStreamerUdp, mEnableHWEncoder,mHardwareAEC;
     private K2Pagent mK2Pagent;
     private String mAnotherStreamPath;
     //    private SurfaceView mSurfaceView;
     private YfPlayerKit mSecondPlayer;
     private SurfaceView mSurfaceView;
 
-    public static void startActivity(Context context, String pullPath, String pushPath, boolean playerUDP, boolean streamerUDP, boolean hardEncoder, int delay) {
+    public static void startActivity(Context context, String pullPath, String pushPath, boolean playerUDP, boolean streamerUDP, boolean hardEncoder,boolean hardwareAEC,int delay) {
         Intent i = new Intent(context, PlayStreamActivity.class);
         i.putExtra(PULL_PATH, pullPath);
         i.putExtra(PUSH_PATH, pushPath);
         i.putExtra(PLAYER_UDP, playerUDP);
         i.putExtra(STREAMER_UDP, streamerUDP);
         i.putExtra(HARD_ENCODER, hardEncoder);
+        i.putExtra(HARD_AEC, hardwareAEC);
         i.putExtra(LINK_BUFFER, delay);
         context.startActivity(i);
     }
@@ -114,6 +118,7 @@ public class PlayStreamActivity extends BasePlayerDemo implements YfCloudPlayer.
         mEnablePlayerUdp = getIntent().getBooleanExtra(PLAYER_UDP, false);
         mEnableStreamerUdp = getIntent().getBooleanExtra(STREAMER_UDP, false);
         mEnableHWEncoder = getIntent().getBooleanExtra(HARD_ENCODER, false);
+        mHardwareAEC = getIntent().getBooleanExtra(HARD_AEC, false);
         mLinkBufferMs = getIntent().getIntExtra(LINK_BUFFER, 400);
         findViews();
         initVideoView();
@@ -470,7 +475,7 @@ public class PlayStreamActivity extends BasePlayerDemo implements YfCloudPlayer.
         mYfLinkerKit.getStreamInfo(mAudiencePath
                 , new QueryLinkCallback() {
                     @Override
-                    public void onSuccess(boolean isOpen) {
+                    public void onSuccess(boolean isOpen, List<LinkerMember> memberList) {
                         Log.d(TAG, String.format("queryLink onSuccess isOpen: %s, srtmp: %s, roomID: %s, ip: %s", isOpen, "", "", ""));
                         if (isOpen) {//主播已开启连麦
 //                            showToast("主播已开启连麦功能");
@@ -523,6 +528,7 @@ public class PlayStreamActivity extends BasePlayerDemo implements YfCloudPlayer.
             mFansPushPath = mK2Pagent.getUrl();
         }
         yfEncoderKit.setLiveUrl(mFansPushPath);
+        yfEncoderKit.setAECMode(mHardwareAEC);
         yfEncoderKit.enableAEC(true);
         yfEncoderKit.startRecord();
         mForceStop = false;
@@ -560,7 +566,7 @@ public class PlayStreamActivity extends BasePlayerDemo implements YfCloudPlayer.
             @Override
             public void onAudioDataDecoded(YfCloudPlayer mp, byte[] data, int length, long pts) {
                 if (yfEncoderKit != null) {
-                    yfEncoderKit.onSecondAudioDecoded(data, length);
+                    yfEncoderKit.onRemoteAudioAvailable(data, length);
                 }
             }
         });

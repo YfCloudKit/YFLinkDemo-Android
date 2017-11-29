@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">YfLinkDemo</string>
+    <string name="app_name">YfLink</string>
     <string name="title_activity_push_stream_linker">PushStreamLinkerActivity</string>
 
     <!-- TODO: Remove or change this placeholder text -->

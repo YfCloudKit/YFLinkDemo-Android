@@ -44,13 +44,16 @@ import com.demo.yflinkdemo.widget.DeviceUtil;
 import com.demo.yflinkdemo.widget.Log;
 import com.demo.yflinkdemo.widget.LogRecorder;
 import com.demo.yflinkdemo.widget.ScaleGLSurfaceView;
+import com.kuaipai.fangyan.core.shooting.jni.Audioproc;
 import com.yunfan.encoder.effect.filter.AlphaBlendFilter;
 import com.yunfan.encoder.filter.YfBlurBeautyFilter;
 import com.yunfan.encoder.widget.RecordMonitor;
 import com.yunfan.encoder.widget.YfEncoderKit;
-import com.yunfan.net.K2Pagent;
 import com.yunfan.player.widget.YfCloudPlayer;
 import com.yunfan.player.widget.YfPlayerKit;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 主播与主播连麦
@@ -68,19 +71,18 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
     private boolean startRecoderAuto = true;
     private ScaleGLSurfaceView mGLSurfaceView;
     private LinearLayout actionbarLayout, infoLayout;
-    private TextView textBitrate, textBuffer,textDelay;
+    private TextView textBitrate, textBuffer, textDelay;
     private ActionBar actionBar;
     private SeekBar audioDelaySeekBar;
     private int surfaceWidth, surfaceHeight;
     private boolean mLandscape = false;
-    private boolean mEnableFilter = true;
     protected static final int VIDEO_WIDTH = 640;
     protected static final int VIDEO_HEIGHT = 368;
     protected static final int VIDEO_FRAME_RATE = 24;
 
-    protected int PREVIEW_WIDTH;
-    protected int PREVIEW_HEIGHT;
-    protected int VIDEO_BITRATE = 600;
+    protected final int PREVIEW_WIDTH = 1280;
+    protected final int PREVIEW_HEIGHT = 720;
+    protected final int VIDEO_BITRATE = 300;
 
     protected LogRecorder logRecoder = new LogRecorder();
     private Handler infoShower = new Handler();
@@ -91,21 +93,18 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
     private static final String STREAMER_UDP = "STREAMER_UDP";
     private static final String HARD_ENCODER = "HARD_ENCODER";
     private static final String LINK_BUFFER = "LINK_BUFFER";
+    private static final String HARDWARE_AEC = "HARDWARE_AEC";
     /**
      * 观众流推流地址
      */
     private String mAudienceUrl;
-    /**
-     * 观众流推流地址-udp
-     */
-    private String mUDPUrl;
 
 
     private boolean mEnableLink = false;
     private boolean mEnableHWEncoder = true;
 
     private String mDebugUrl;
-    private boolean ENABLE_PLAYER_UDP, ENABLE_STREAMER_UDP;
+    private boolean ENABLE_PLAYER_UDP, ENABLE_STREAMER_UDP, ENABLE_HARDWARE_AEC;
     private final int BEAUTY_INDEX = 1, LOGO_INDEX = 2;
     private int mLinkBufferMs;
     private YfBlurBeautyFilter mBeautyFilter;
@@ -115,14 +114,21 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
      * 主播的播放地址，根据该地址创建连麦房间
      */
     private String mHostPlayUrl;
+    private SeekBar audioAgcSeekBar;
+    private SeekBar audioNsSeekBar;
+    private SeekBar audioAecSeekBar;
+    private TextView textAgc;
+    private TextView textNs;
+    private TextView textAec;
 
-    public static void startActivity(Context context, String pushUrl, String secondUrl, boolean playerUDP, boolean streamerUDP, boolean hardEncoder, int bufferMs) {
+    public static void startActivity(Context context, String pushUrl, String secondUrl, boolean playerUDP, boolean streamerUDP, boolean hardEncoder, boolean hardAEC, int bufferMs) {
         Intent i = new Intent(context, PushStreamLinkerActivity.class);
         i.putExtra(URL_LIVE, pushUrl);
         i.putExtra(SECOND_URL_LIVE, secondUrl);
         i.putExtra(PLAYER_UDP, playerUDP);
         i.putExtra(STREAMER_UDP, streamerUDP);
         i.putExtra(HARD_ENCODER, hardEncoder);
+        i.putExtra(HARDWARE_AEC, hardAEC);
         i.putExtra(LINK_BUFFER, bufferMs);
         context.startActivity(i);
     }
@@ -131,24 +137,13 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLandscape = false;
-        mEnableFilter = true;
-        mEnableFilter = mEnableFilter && YfEncoderKit.canUsingFilter();
         ENABLE_PLAYER_UDP = getIntent().getBooleanExtra(PLAYER_UDP, false);
         ENABLE_STREAMER_UDP = getIntent().getBooleanExtra(STREAMER_UDP, false);
+        ENABLE_HARDWARE_AEC = getIntent().getBooleanExtra(HARDWARE_AEC, false);
         mLinkBufferMs = getIntent().getIntExtra(LINK_BUFFER, 400);
         YfPlayerKit.enableRotation(true);//主播端使用textureview播放视频，可以简单解决surfaceview被glsurfaceview覆盖的问题
         mAudienceUrl = MainActivity.PUSH_HOST + getDefaultUrl();//第一条流推流地址
         mHostPlayUrl = MainActivity.PULL_HOST + getDefaultUrl();
-
-
-        if (mEnableFilter) {
-            PREVIEW_WIDTH = 1280;
-            PREVIEW_HEIGHT = 720;
-
-        } else {
-            PREVIEW_WIDTH = 640;
-            PREVIEW_HEIGHT = 480;
-        }
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkEncoderPermission();
         } else {
@@ -281,6 +276,8 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
             case R.id.action_open_zhubo_link:
                 mEnableLink = !mEnableLink;
                 if (mEnableLink) {
+                    boolean enable = yfEncoderKit.setAECMode(ENABLE_HARDWARE_AEC);
+                    Toast.makeText(PushStreamLinkerActivity.this, "硬件AEC：" + (enable ? "支持" : "不支持"), Toast.LENGTH_SHORT).show();
                     yfEncoderKit.enableAEC(true);
                     mDebugUrl = MainActivity.LINKER_PULL_HOST + getIntent().getStringExtra(SECOND_URL_LIVE) /*+ ".flv"*/;
                     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -321,6 +318,7 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
         if (receiver != null) {
             unregisterReceiver(receiver);
         }
+        closePlayer();
         destroyRecorder();
     }
 
@@ -361,25 +359,22 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
                 return yfEncoderKit.manualZoom(zoom);
             }
         });
-        textDelay= (TextView) findViewById(R.id.seekProgress);
-        audioDelaySeekBar = (SeekBar) findViewById(R.id.seekBar0);
-        audioDelaySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                textDelay.setText(progress+"");
-            }
+        textDelay = (TextView) findViewById(R.id.seekProgressDelay);
+        textAgc = (TextView) findViewById(R.id.seekProgressAgc);
+        textNs = (TextView) findViewById(R.id.seekProgressNs);
+        textAec = (TextView) findViewById(R.id.seekProgressAec);
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+        audioDelaySeekBar = (SeekBar) findViewById(R.id.seekBar_delay);
+        audioAgcSeekBar = (SeekBar) findViewById(R.id.seekBar_agc);
+        audioNsSeekBar = (SeekBar) findViewById(R.id.seekBar_ns);
+        audioAecSeekBar = (SeekBar) findViewById(R.id.seekBar_aec);
 
-            }
+        audioDelaySeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
+        audioAgcSeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
+        audioNsSeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
+        audioAecSeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                yfEncoderKit.setInputAudioDelay(seekBar.getProgress());
 
-            }
-        });
         mGLSurfaceView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -404,6 +399,53 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
         initRecorder(mGLSurfaceView);
 
     }
+
+    private SeekBar.OnSeekBarChangeListener mOnSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            switch (seekBar.getId()) {
+                case R.id.seekBar_delay:
+                    textDelay.setText(progress + "");
+                    break;
+                case R.id.seekBar_agc:
+                    textAgc.setText(progress + "");
+                    break;
+                case R.id.seekBar_ns:
+                    textNs.setText(progress + "");
+                    break;
+                case R.id.seekBar_aec:
+                    textAec.setText(progress + "");
+                    break;
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            int setOption = -1;
+            switch (seekBar.getId()) {
+                case R.id.seekBar_delay:
+                    setOption = yfEncoderKit.setAudioProcessOption(Audioproc.KEY_DELAY, seekBar.getProgress());
+//                    yfEncoderKit.setInputAudioDelay(seekBar.getProgress());
+                    break;
+                case R.id.seekBar_agc:
+                    setOption = yfEncoderKit.setAudioProcessOption(Audioproc.KEY_AGC_VOLUME, seekBar.getProgress());
+                    break;
+                case R.id.seekBar_ns:
+                    setOption = yfEncoderKit.setAudioProcessOption(Audioproc.KEY_NS_LEVEL, seekBar.getProgress());
+                    break;
+                case R.id.seekBar_aec:
+                    setOption = yfEncoderKit.setAudioProcessOption(Audioproc.KEY_AEC_LEVEL, seekBar.getProgress());
+                    break;
+            }
+            Toast.makeText(PushStreamLinkerActivity.this, "setOption return " + setOption, Toast.LENGTH_SHORT).show();
+
+        }
+    };
 
     private void resizeYfPlayerKit() {
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(360, 640);
@@ -448,7 +490,7 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
                 .enableFlipFrontCamera(false)//设置前置摄像头是否镜像处理，默认为true
                 .setRecordMonitor(this)//设置回调
                 .setDropVideoFrameOnly(true)
-                .setDefaultCamera(false)//设置默认打开后置摄像头---不设置也默认打开后置摄像头
+                .setDefaultCamera(true)//设置默认打开后置摄像头---不设置也默认打开后置摄像头
                 .openCamera(s);//设置预览窗口
         mBeautyFilter = new YfBlurBeautyFilter(this);
         mBeautyFilter.setIndex(BEAUTY_INDEX);
@@ -483,12 +525,12 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
         yfEncoderKit.changeMode(YfEncoderKit.MODE_LIVE, VIDEO_BITRATE);
 //        yfEncoderKit.setAdjustQualityAuto(true, 300);//打开码率自适应，最低码率300k
         yfEncoderKit.setBufferSizeBySec(1);//最多缓存1秒的数据，超过1秒则丢帧
-        mUDPUrl = mAudienceUrl;
         yfEncoderKit.enableUDP(ENABLE_STREAMER_UDP);
-        yfEncoderKit.setLiveUrl(mUDPUrl);
+        yfEncoderKit.setAdjustQualityAuto(true, 300);
+        yfEncoderKit.setLiveUrl(mAudienceUrl);
         int x = VIDEO_HEIGHT - MainActivity.OUT_WIDTH;
         int y = VIDEO_WIDTH - MainActivity.OUT_HEIGHT;
-        yfEncoderKit.setSecondFramePosition(x - MainActivity.DELTA_X, y - MainActivity.DELTA_Y);
+        yfEncoderKit.setRemoteFramePosition(x - MainActivity.DELTA_X, y - MainActivity.DELTA_Y);
         yfEncoderKit.startRecord();
         if (dataShowing) {
             infoShower.removeCallbacks(updateDisplay);
@@ -736,25 +778,18 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
         mYfPlayerKit.setVisibility(View.VISIBLE);
         mYfPlayerKit.enableBufferState(false);
         mYfPlayerKit.setDelayTimeMs(mLinkBufferMs, mLinkBufferMs);
-        mYfPlayerKit.setHardwareDecoder(false);
+        mYfPlayerKit.setHardwareDecoder(true);
         mYfPlayerKit.setAudioTrackStreamType(AudioManager.STREAM_VOICE_CALL);
         mYfPlayerKit.setOnNativeAudioDecodedListener(new YfCloudPlayer.OnNativeAudioDataDecoded() {
             @Override
             public void onAudioDataDecoded(YfCloudPlayer mp, byte[] data, int length, long pts) {
 //                Log.d(TAG, "onAudioDataDecoded: " + pts);
                 if ((mEnableLink) && yfEncoderKit != null)
-                    yfEncoderKit.onSecondAudioDecoded(data, length);//将音频数据传入编码器
+                    yfEncoderKit.onRemoteAudioAvailable(data, length);//将音频数据传入编码器
 
             }
         });
 
-        mYfPlayerKit.setOnNativeVideoDecodedListener(new YfCloudPlayer.OnNativeVideoDataDecoded() {
-            @Override
-            public void onVideoDataDecoded(YfCloudPlayer mp, byte[] data, int width, int height, long pts) {
-//                if (mEnableLink && yfEncoderKit != null)
-//                    yfEncoderKit.onSecondFrameDecoded(data, width, height);//将视频数据传入编码器
-            }
-        });
         mYfPlayerKit.setOnPreparedListener(new YfCloudPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(YfCloudPlayer mp) {
@@ -797,23 +832,7 @@ public class PushStreamLinkerActivity extends AppCompatActivity implements Recor
             }
         });
         mYfPlayerKit.enableUDP(ENABLE_PLAYER_UDP);
-        mYfPlayerKit.setOnInfoListener(new YfCloudPlayer.OnInfoListener() {
-            @Override
-            public boolean onInfo(YfCloudPlayer mp, int what, int extra) {
-                if (what == YfPlayerKit.INFO_CODE_VIDEO_RENDERING_START) {
-//                    AudioManager audioManager=(AudioManager) PushStreamActivity.this.getSystemService(Context.AUDIO_SERVICE);
-//                    audioManager.requestAudioFocus(null, AudioManager.STREAM_VOICE_CALL,
-//                            AudioManager.AUDIOFOCUS_GAIN);
-//
-//                    // Start by setting MODE_IN_COMMUNICATION as default audio mode. It is
-//                    // required to be in this mode when playout and/or recording starts for
-//                    // best possible VoIP performance.
-//                    // TODO(henrika): we migh want to start with RINGTONE mode here instead.
-//                    audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-                }
-                return false;
-            }
-        });
+
         mYfPlayerKit.setVideoPath(path);
         mYfPlayerKit.start();
     }

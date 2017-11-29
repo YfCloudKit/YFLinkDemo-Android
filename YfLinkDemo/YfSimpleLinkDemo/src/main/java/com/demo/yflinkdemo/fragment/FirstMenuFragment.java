@@ -35,6 +35,7 @@ public class FirstMenuFragment extends Fragment {
     private boolean mEnablePullUdp;
     private boolean mEnablePushUdp;
     private boolean mHardwareEncoder;
+    private boolean mHardAEC;
 
     public FirstMenuFragment() {
         // Required empty public constructor
@@ -124,7 +125,7 @@ public class FirstMenuFragment extends Fragment {
                 mStreamPath0.getText().toString(),
                 mLinkPath0.getText().toString(),
                 mEnablePullUdp,
-                mEnablePushUdp, mHardwareEncoder, delay);
+                mEnablePushUdp, mHardwareEncoder,mHardAEC, delay);
     }
 
     public void openStream() {
@@ -134,13 +135,14 @@ public class FirstMenuFragment extends Fragment {
                 mStreamPath0.getText().toString(),
                 mLinkPath0.getText().toString(),
                 mEnablePullUdp,
-                mEnablePushUdp, mHardwareEncoder, delay);
+                mEnablePushUdp, mHardwareEncoder,mHardAEC, delay);
     }
 
-    public void setPrams(boolean enablePlayerUdp, boolean enableStreamUdp, boolean enableHardEncoder) {
-        Log.d(TAG, "setPrams: " + enablePlayerUdp + " " + enableStreamUdp + " " + enableHardEncoder);
+    public void setPrams(boolean enablePlayerUdp, boolean enableStreamUdp, boolean enableHardEncoder,boolean enableHWAEC) {
+        Log.d(TAG, "setPrams: " + enablePlayerUdp + " " + enableStreamUdp + " " + enableHardEncoder+" " + enableHWAEC);
         mEnablePullUdp = enablePlayerUdp;
         mEnablePushUdp = enableStreamUdp;
         mHardwareEncoder = enableHardEncoder;
+        mHardAEC = enableHWAEC;
     }
 }

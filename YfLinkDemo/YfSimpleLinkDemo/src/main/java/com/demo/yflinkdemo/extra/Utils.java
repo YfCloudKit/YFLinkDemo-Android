@@ -1,5 +1,6 @@
 package com.demo.yflinkdemo.extra;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
@@ -15,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Formatter;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -30,7 +32,20 @@ public class Utils {
         return originUrl.substring(originUrl.lastIndexOf("/") + 1);
     }
 
-
+    public static boolean isForeground(Context context) {
+        if (context != null) {
+            ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningAppProcessInfo> processes = activityManager.getRunningAppProcesses();
+            for (ActivityManager.RunningAppProcessInfo processInfo: processes) {
+                if (processInfo.processName.equals(context.getPackageName())) {
+                    if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     //    mFormatBuilder
 //    mFormatter

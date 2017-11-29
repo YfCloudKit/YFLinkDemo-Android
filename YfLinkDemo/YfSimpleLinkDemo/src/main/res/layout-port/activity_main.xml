@@ -21,7 +21,7 @@
         android:layout_alignParentRight="true"
         android:orientation="horizontal"
         android:padding="4dp"
-        android:weightSum="3">
+        android:weightSum="4">
 
         <RelativeLayout
             android:layout_width="0dp"
@@ -42,7 +42,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="28dp"
                 android:gravity="center"
-                android:text="开启拉流UDP"/>
+                android:text="拉流UDP"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -64,7 +64,7 @@
                 android:layout_below="@id/enableStreamerUdp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="28dp"
-                android:text="开启推流UDP"/>
+                android:text="推流UDP"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -87,6 +87,28 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="28dp"
                 android:text="开启硬编"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            >
+
+            <Switch
+                android:id="@+id/hardAEC"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:checked="false"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/hardAEC"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="28dp"
+                android:text="硬件AEC"/>
         </RelativeLayout>
     </LinearLayout>
 

@@ -41,12 +41,13 @@ dependencies {
 //    compile project(':YfAuthentication')
 //    compile project(':YfKit')
 
-    compile 'com.github.YfCloudKit.YfKitLibrary:FFMpeg-decoder-encoder-https:b049686d82'
-    compile 'com.github.YfCloudKit.YfKitLibrary:MuxerLib-link:b049686d82'
-    compile 'com.github.YfCloudKit.YfKitLibrary:YfAR:b049686d82'
-    compile 'com.github.YfCloudKit.YfKitLibrary:YfAuthentication:b049686d82'
-    compile 'com.github.YfCloudKit.YfKitLibrary:YfEncoderKit:b049686d82'
-    compile 'com.github.YfCloudKit.YfKitLibrary:YfK2Pagent:b049686d82'
-    compile 'com.github.YfCloudKit.YfKitLibrary:YfMediaPlayer:b049686d82'
-    compile 'com.github.YfCloudKit.YfKitLibrary:YfLinkKit:-SNAPSHOT'
+    compile 'com.github.YfCloudKit.YfKitLibrary:YfAR:5a4d1365be'
+    compile 'com.github.YfCloudKit.YfKitLibrary:YfAuthentication:5a4d1365be'
+
+    compile 'com.github.YfCloudKit.YfKitLibrary:FFMpeg-decoder-encoder-https:5a4d1365be'
+    compile 'com.github.YfCloudKit.YfKitLibrary:MuxerLib-link:5a4d1365be'
+    compile 'com.github.YfCloudKit.YfKitLibrary:YfEncoderKit:5a4d1365be'
+    compile 'com.github.YfCloudKit.YfKitLibrary:YfK2Pagent:5a4d1365be'
+    compile 'com.github.YfCloudKit.YfKitLibrary:YfMediaPlayer:5a4d1365be'
+    compile 'com.github.YfCloudKit.YfKitLibrary:YfLinkKit:5a4d1365be'
 }

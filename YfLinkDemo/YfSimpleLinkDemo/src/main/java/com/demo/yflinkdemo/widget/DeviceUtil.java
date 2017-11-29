@@ -5,9 +5,15 @@
  */
 package com.demo.yflinkdemo.widget;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.os.Build;
 import android.view.Display;
+import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 
 import java.io.BufferedReader;
@@ -28,11 +34,7 @@ public class DeviceUtil {
         final Display d = ((WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         d.getSize(p);
-        if (p.x > p.y) {
-            return p.y;
-        } else {
-            return p.x;
-        }
+        return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE?Math.max(p.x,p.y):Math.min(p.x,p.y);
     }
 
     public static int getScreenHeight(Context context) {
@@ -40,11 +42,7 @@ public class DeviceUtil {
         final Display d = ((WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         d.getSize(p);
-        if (p.x > p.y) {
-            return p.x;
-        } else {
-            return p.y;
-        }
+        return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE?Math.min(p.x,p.y):Math.max(p.x,p.y);
     }
 
     public static String getRecorderSoName() {
@@ -89,9 +87,9 @@ public class DeviceUtil {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-        	if (input != null) {
+            if (input != null) {
                 try {
-                	input.close();
+                    input.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -105,7 +103,8 @@ public class DeviceUtil {
             if (cpuInfo != null && cpuInfo.contains(feature)) {
                 return true;
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return false;
     }
 
@@ -123,4 +122,40 @@ public class DeviceUtil {
 
         return null;
     }
+
+    /**
+     * 通过设置全屏，设置状态栏透明
+     *
+     * @param activity
+     */
+    public static void fullScreen(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    //5.x开始需要把颜色设置透明，否则导航栏会呈现系统默认的浅灰色
+                    Window window = activity.getWindow();
+                    View decorView = window.getDecorView();
+                    //两个 flag 要结合使用，表示让应用的主体内容占用系统状态栏的空间
+                    int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+                    decorView.setSystemUiVisibility(option);
+                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    window.setStatusBarColor(Color.TRANSPARENT);
+                    //导航栏颜色也可以正常设置
+                    //window.setNavigationBarColor(Color.TRANSPARENT);
+                } else {
+                    Window window = activity.getWindow();
+                    WindowManager.LayoutParams attributes = window.getAttributes();
+                    int flagTranslucentStatus = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+                    int flagTranslucentNavigation = WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
+                    attributes.flags |= flagTranslucentStatus;
+                    //attributes.flags |= flagTranslucentNavigation;
+                    window.setAttributes(attributes);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
