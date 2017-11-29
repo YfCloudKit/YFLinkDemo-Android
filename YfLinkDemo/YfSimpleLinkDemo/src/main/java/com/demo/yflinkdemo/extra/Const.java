@@ -18,8 +18,8 @@ public class Const {
     public static final int ROLE_VICE_HOST = 2;
     public static final int ROLE_AUDIENCE = 3;
     public static final String DEFAULT_ROOM_ID = "test";
-    public static final String DEFAULT_HOST_ID = "shenzhen200";
-    public static final String DEFAULT_VICE_HOST_ID = "shenzhen201";
+    public static final String DEFAULT_HOST_ID = "shenzhen800";
+    public static final String DEFAULT_VICE_HOST_ID = "shenzhen801";
 
     public static final String AccessKey = "65592eeddc3d646db903a7367d58792268804f09";
     public static final String Token = "9e7299afc12d793a23d913d88be6fa6383f5876e";
